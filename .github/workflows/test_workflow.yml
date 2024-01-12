@@ -79,6 +79,8 @@ jobs:
         run: |
           conda install numpy=${{ matrix.NUMPY }} scipy=${{ matrix.SCIPY }} -q -y
 
+          pip install packaging
+
           echo "============================================================="
           echo "Install BORING"
           echo "============================================================="
