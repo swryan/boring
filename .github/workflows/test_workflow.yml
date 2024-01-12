@@ -118,25 +118,24 @@ jobs:
           echo "Install pyoptsparse"
           echo "============================================================="
 
-            python -m pip install git+https://github.com/OpenMDAO/build_pyoptsparse
-            BRANCH="-b ${{ matrix.PYOPTSPARSE }}"
+          python -m pip install git+https://github.com/OpenMDAO/build_pyoptsparse
+          BRANCH="-b ${{ matrix.PYOPTSPARSE }}"
 
-            if [[ "${{ matrix.SNOPT }}" == "7.7" && "${{ secrets.SNOPT_LOCATION_77 }}" ]]; then
-              echo "  > Secure copying SNOPT 7.7 over SSH"
-              mkdir SNOPT
-              scp -qr ${{ secrets.SNOPT_LOCATION_77 }} SNOPT
-              SNOPT="-s SNOPT/src"
-            elif [[ "${{ matrix.SNOPT }}" == "7.2" && "${{ secrets.SNOPT_LOCATION_72 }}" ]]; then
-              echo "  > Secure copying SNOPT 7.2 over SSH"
-              mkdir SNOPT
-              scp -qr ${{ secrets.SNOPT_LOCATION_72 }} SNOPT
-              SNOPT="-s SNOPT/source"
-            elif [[ "${{ matrix.SNOPT }}" ]]; then
-              echo "SNOPT version ${{ matrix.SNOPT }} was requested but source is not available"
-            fi
-
-            build_pyoptsparse $BRANCH $SNOPT
+          if [[ "${{ matrix.SNOPT }}" == "7.7" && "${{ secrets.SNOPT_LOCATION_77 }}" ]]; then
+            echo "  > Secure copying SNOPT 7.7 over SSH"
+            mkdir SNOPT
+            scp -qr ${{ secrets.SNOPT_LOCATION_77 }} SNOPT
+            SNOPT="-s SNOPT/src"
+          elif [[ "${{ matrix.SNOPT }}" == "7.2" && "${{ secrets.SNOPT_LOCATION_72 }}" ]]; then
+            echo "  > Secure copying SNOPT 7.2 over SSH"
+            mkdir SNOPT
+            scp -qr ${{ secrets.SNOPT_LOCATION_72 }} SNOPT
+            SNOPT="-s SNOPT/source"
+          elif [[ "${{ matrix.SNOPT }}" ]]; then
+            echo "SNOPT version ${{ matrix.SNOPT }} was requested but source is not available"
           fi
+
+          build_pyoptsparse $BRANCH $SNOPT
 
       - name: Display environment info
         id: env_info
@@ -208,7 +207,7 @@ jobs:
         run: |
           conda install numpy=${{ matrix.NUMPY }} scipy=${{ matrix.SCIPY }} -q -y
 
-          python -m pip install --upgrade pip
+          pip install packaging
 
           echo "============================================================="
           echo "Install BORING"
