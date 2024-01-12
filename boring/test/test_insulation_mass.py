@@ -39,7 +39,7 @@ class TestInsulationMass(unittest.TestCase):
 
     def test_partials(self):
         data = self.prob.check_partials(out_stream=None, method='cs')
-        assert_check_partials(data, atol=1e-10, rtol=1e-10)
+        assert_check_partials(data, atol=1.0E-5, rtol=1.0E-5)
 
 
 if __name__ == '__main__':

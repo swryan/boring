@@ -6,7 +6,7 @@ import numpy as np
 import openmdao.api as om
 
 
-class MassGroup(om.Group): 
+class MassGroup(om.Group):
     """sum all individual masses to estimate total mass and mass fractions"""
     def initialize(self):
         self.options.declare('num_nodes', types=int)
@@ -36,7 +36,7 @@ class packMass(om.ExplicitComponent):
     def setup(self):
         nn = self.options['num_nodes']
 
-        self.add_input('PCM_tot_mass', units='kg', desc='total pack PCM mass') 
+        self.add_input('PCM_tot_mass', units='kg', desc='total pack PCM mass')
         self.add_input('mass_OHP', units='kg', desc='total pack OHP mass')
         self.add_input('frame_mass', units='kg', desc='frame mass per cell')
         self.add_input('n_cells', desc='number of cells')
@@ -55,6 +55,7 @@ class packMass(om.ExplicitComponent):
 
     def setup_partials(self):
         self.declare_partials('*', '*', method='cs')
+        self.set_check_partial_options('*', method='fd')
 
 
 class frameMass(om.ExplicitComponent):
@@ -71,7 +72,7 @@ class frameMass(om.ExplicitComponent):
 
         # Outputs
         self.add_output('frame_mass', desc='inactive structural mass per cell', units='kg')
-    
+
     def setup_partials(self):
         self.declare_partials('*', '*', method='cs')
 

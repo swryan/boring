@@ -5,9 +5,8 @@ import unittest
 import numpy as np
 from boring.src.model.reg_thevenin_interp_group import RegTheveninInterpGroup
 from boring.src.model.maps.s18650_battery import battery
-from numpy.testing import assert_almost_equal
 from openmdao.api import Problem, Group, IndepVarComp
-from openmdao.utils.assert_utils import assert_rel_error, assert_check_partials
+from openmdao.utils.assert_utils import assert_near_equal, assert_check_partials
 
 
 class TestRegComp(unittest.TestCase):
@@ -34,7 +33,7 @@ class TestRegComp(unittest.TestCase):
         prob.run_model()
 
     def test_results(self):
-         
+
         import matplotlib
         matplotlib.use('agg') # <--- comment out if you want to show this plot.
         import matplotlib.pyplot as plt
@@ -49,11 +48,11 @@ class TestRegComp(unittest.TestCase):
         plt.show()
 
         #spot check shape and points
-        assert_rel_error(self, battery.tR_0.shape, [5,33], tolerance=1.0E-6)
-        assert_rel_error(self, battery.tR_0[-1][-1], 0.03, tolerance=1.0E-3)
+        assert_near_equal(battery.tR_0.shape, [5,33], tolerance=1.0E-6)
+        assert_near_equal(battery.tR_0[-1][-1], 0.03, tolerance=1.0E-3)
 
     def test_derivs(self):
-        
+
         data = self.prob.check_partials(out_stream=None)
         assert_check_partials(data, atol=1e-6, rtol=1e-6) # this is really just a metamodel comp
 

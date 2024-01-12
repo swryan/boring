@@ -2,7 +2,7 @@ import json
 import os
 
 import openmdao.api as om
-from openmdao.utils.assert_utils import assert_rel_error
+from openmdao.utils.assert_utils import assert_near_equal
 
 XDSM_PATH = os.path.abspath(os.path.join(__file__, '..', '..', 'XDSM'))
 
@@ -46,14 +46,14 @@ def assert_match_spec(system, spec_path):
         else:
             unconnected_inputs.add(in_data['prom_name'])
 
-    # now we need to check if there are any unconnected inputs 
+    # now we need to check if there are any unconnected inputs
     # in the model that aren't in the spec
     extra_inputs = unconnected_inputs - spec_data['inputs']
     if len(extra_inputs) > 0:
         raise ValueError(
             f'unconnected inputs {extra_inputs} are in your model, but are missing as inputs in the {spec_path} spec.')
 
-    # last we need to check if any of the spec inputs have 
+    # last we need to check if any of the spec inputs have
     # internal connections (e.g. from stray IVCs)
     blocked_inputs = connected_inputs.intersection(spec_data['inputs'])
     # print(blocked_inputs)
@@ -76,7 +76,7 @@ def assert_match_vals(test_case, system, spec_path, tolerance=1e-5, test_names=N
     else:
         # if there is just one case, then modify the dict to make auto-name the single case
         try:
-            # Setup the verification case model  
+            # Setup the verification case model
             v_data_inputs = system.verify_data['inputs']
             # v_data_outputs = system.verify_data['outputs']
             verify_data = {'v_test1': system.verify_data}
@@ -102,7 +102,7 @@ def assert_match_vals(test_case, system, spec_path, tolerance=1e-5, test_names=N
                 v_unit = None
 
             ivc.add_output(v_name, val=v_val, units=v_unit)
-            # note, can't set units, but don't want to hack it in. 
+            # note, can't set units, but don't want to hack it in.
             # Unit data should be available from the system itself via the default-auto-ivc stuff
 
         prob.model.add_subsystem('sys', system, promotes=['*'])
@@ -125,9 +125,9 @@ def assert_match_vals(test_case, system, spec_path, tolerance=1e-5, test_names=N
                 computed_val = prob.get_val(f'sys.{v_name}', units=v_unit)
 
             try:
-                assert_rel_error(test_case, computed_val, v_val, tolerance=tolerance)
+                assert_near_equal(test_case, computed_val, v_val, tolerance=tolerance)
             except AssertionError as err:
                 raise ValueError(f'in case "{v_case_name}", for {v_name}: ' + str(err))
 
-    # for v_name in spec_data['inputs']: 
+    # for v_name in spec_data['inputs']:
     #     print(v_name, prob.model._var_allprocs_prom2abs_list['input'][v_name])

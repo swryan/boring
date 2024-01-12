@@ -4,11 +4,11 @@ import unittest
 import numpy as np
 from numpy.testing import assert_almost_equal
 from openmdao.api import Problem, Group, pyOptSparseDriver, DirectSolver
-from openmdao.utils.assert_utils import assert_rel_error, assert_check_partials
+from openmdao.utils.assert_utils import assert_near_equal, assert_check_partials
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
-import openmdao.api as om 
+import openmdao.api as om
 
 from openmdao.utils.general_utils import set_pyoptsparse_opt
 
@@ -87,7 +87,7 @@ class TestBatteryODE(unittest.TestCase):
         ax[2].plot(t_opt, SOC_opt, 'r', label='$SOC$')
 
         #spot check final values
-        # assert_rel_error(self, T_batt_opt[-1], 1.25934406, tolerance=1.0E-6)
+        # assert_near_equal(T_batt_opt[-1], 1.25934406, tolerance=1.0E-6)
 
         # ax[3].plot(t_opt, V_opt, 'r', label='$Voltage$')
 
