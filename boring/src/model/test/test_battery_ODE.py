@@ -77,7 +77,7 @@ class TestBatteryODE(unittest.TestCase):
         fig.suptitle('Temperature Plots')
 
         t_opt = p.get_val('phase0.timeseries.time')
-        SOC_opt = p.get_val('phase0.timeseries.states:SOC', units=None)
+        SOC_opt = p.get_val('phase0.timeseries.SOC', units=None)
 
         Q_batt_opt = p.get_val('phase0.timeseries.Q_{batt}', units='kW')
 

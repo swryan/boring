@@ -54,7 +54,7 @@ class HeatPipeGroup(om.Group):
             if pcm_bool:
                 self.add_subsystem(name='T_rate_pcm_{}'.format(i),
                                subsys=PCM_Group(num_nodes=nn))
-            else:   
+            else:
                 self.add_subsystem(name='T_rate_cell_{}'.format(i),
                                subsys=TempRateComp(num_nodes=nn))
 
@@ -111,15 +111,15 @@ if __name__ == "__main__":
     T_in[1] = 100
 
     for x in np.arange(num_cells_tot):
-        p['cell_{}.Rex.T_in'.format(x)] = T_in[x]
-        p['cell_{}.L_flux'.format(x)] = 0.02
-        p['cell_{}.Rex.R'.format(x)] = [0.0001],
+        p['cell_{}_Rex.T_in'.format(x)] = T_in[x]
+        p['cell_{}_L_flux'.format(x)] = 0.02
+        p['cell_{}_Rex.R'.format(x)] = [0.0001],
 
     p.run_model()
 
     # om.view_connections(p)
-    # p.model.list_inputs(values=True, prom_name=True)
-    # p.model.list_outputs(values=True, prom_name=True)
+    # p.model.list_inputs(val=True, prom_name=True)
+    # p.model.list_outputs(val=True, prom_name=True)
     print('Finished Successfully')
 
     print('\n', '\n')
