@@ -130,7 +130,7 @@ jobs:
           echo "Install pyoptsparse"
           echo "============================================================="
 
-          if [[ "${{ matrix.OS }}" == "windows-latest"; then
+          if [[ "${{ matrix.OS }}" == "windows-latest" ]]; then
             if [[ "${{ matrix.SNOPT }}" ]]; then
               echo "SNOPT v${{ matrix.SNOPT }} was requested but SNOPT is not available on Windows"
             fi
