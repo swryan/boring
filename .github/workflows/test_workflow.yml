@@ -136,7 +136,7 @@ jobs:
             fi
 
             conda install -c conda-forge pyoptsparse=${{ matrix.PYOPTSPARSE }} -q -y
-          elif
+          else
             python -m pip install git+https://github.com/OpenMDAO/build_pyoptsparse
 
             BRANCH="-b ${{ matrix.PYOPTSPARSE }}"
