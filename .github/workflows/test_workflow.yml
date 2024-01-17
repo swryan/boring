@@ -8,6 +8,10 @@ on:
   pull_request:
     branches: [ main ]
 
+  # Run weekly, Tuesdays at 0400 UTC
+  schedule:
+    - cron: '0 4 * * 2'
+
   # Allow running the workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -33,6 +37,14 @@ jobs:
             PETSc: '3.18'
             PYOPTSPARSE: 'v2.10.1'
             SNOPT: '7.7'
+
+          # test baseline versions on Windows
+          - NAME: Windows Baseline
+            OS: windows-latest
+            PY: '3.11'
+            NUMPY: '1.24'
+            SCIPY: '1.11'
+            PYOPTSPARSE: '2.10.1'
 
     runs-on: ${{ matrix.OS }}
 
@@ -118,111 +130,37 @@ jobs:
           echo "Install pyoptsparse"
           echo "============================================================="
 
-          python -m pip install git+https://github.com/OpenMDAO/build_pyoptsparse
-          BRANCH="-b ${{ matrix.PYOPTSPARSE }}"
+          if [[ "${{ matrix.OS }}" == "windows-latest"; then
+            if [[ "${{ matrix.SNOPT }}" ]]; then
+              echo "SNOPT v${{ matrix.SNOPT }} was requested but SNOPT is not available on Windows"
+            fi
 
-          if [[ "${{ matrix.SNOPT }}" == "7.7" && "${{ secrets.SNOPT_LOCATION_77 }}" ]]; then
-            echo "  > Secure copying SNOPT 7.7 over SSH"
-            mkdir SNOPT
-            scp -qr ${{ secrets.SNOPT_LOCATION_77 }} SNOPT
-            SNOPT="-s SNOPT/src"
-          elif [[ "${{ matrix.SNOPT }}" == "7.2" && "${{ secrets.SNOPT_LOCATION_72 }}" ]]; then
-            echo "  > Secure copying SNOPT 7.2 over SSH"
-            mkdir SNOPT
-            scp -qr ${{ secrets.SNOPT_LOCATION_72 }} SNOPT
-            SNOPT="-s SNOPT/source"
-          elif [[ "${{ matrix.SNOPT }}" ]]; then
-            echo "SNOPT version ${{ matrix.SNOPT }} was requested but source is not available"
+            conda install -c conda-forge pyoptsparse=${{ matrix.PYOPTSPARSE }} -q -y
+          elif
+            python -m pip install git+https://github.com/OpenMDAO/build_pyoptsparse
+
+            BRANCH="-b ${{ matrix.PYOPTSPARSE }}"
+
+            if [[ "${{ matrix.SNOPT }}" == "7.7" && "${{ secrets.SNOPT_LOCATION_77 }}" ]]; then
+              echo "  > Secure copying SNOPT 7.7 over SSH"
+              mkdir SNOPT
+              scp -qr ${{ secrets.SNOPT_LOCATION_77 }} SNOPT
+              SNOPT="-s SNOPT/src"
+            elif [[ "${{ matrix.SNOPT }}" == "7.2" && "${{ secrets.SNOPT_LOCATION_72 }}" ]]; then
+              echo "  > Secure copying SNOPT 7.2 over SSH"
+              mkdir SNOPT
+              scp -qr ${{ secrets.SNOPT_LOCATION_72 }} SNOPT
+              SNOPT="-s SNOPT/source"
+            elif [[ "${{ matrix.SNOPT }}" ]]; then
+              echo "SNOPT version ${{ matrix.SNOPT }} was requested but source is not available"
+            fi
+
+            build_pyoptsparse $BRANCH $SNOPT
           fi
-
-          build_pyoptsparse $BRANCH $SNOPT
 
       - name: Display environment info
         id: env_info
         continue-on-error: true
-        run: |
-          conda info
-          conda list
-
-      - name: Run tests
-        run: |
-          echo "============================================================="
-          echo "Run tests (from directory other than repo root)"
-          echo "============================================================="
-          cd $HOME
-          testflo -n 2 boring --timeout=240 --show_skipped --durations=20
-
-      - name: Notify slack
-        uses: act10ns/slack@v2.0.0
-        with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          status: ${{ job.status }}
-        if: failure()
-
-  windows_tests:
-    runs-on: windows-latest
-
-    timeout-minutes: 60
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # baseline versions
-          - NAME: Windows Baseline
-            PY: '3.11'
-            NUMPY: '1.24'
-            SCIPY: '1.11'
-            PYOPTSPARSE: '2.10.1'
-
-    name: ${{ matrix.NAME }}
-
-    defaults:
-      run:
-        shell: pwsh
-
-    steps:
-      - name: Display run details
-        run: |
-          echo "============================================================="
-          echo "Run #$env:GITHUB_RUN_NUMBER"
-          echo "Run ID: $env:GITHUB_RUN_ID"
-          echo "Testing: $env:GITHUB_REPOSITORY"
-          echo "Triggered by: $env:GITHUB_EVENT_NAME"
-          echo "Initiated by: $env:GITHUB_ACTOR"
-          echo "============================================================="
-
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.PY }}
-          conda-version: "*"
-          channels: conda-forge,defaults
-          channel-priority: true
-
-      - name: Install BORING
-        run: |
-          conda install numpy=${{ matrix.NUMPY }} scipy=${{ matrix.SCIPY }} -q -y
-
-          pip install packaging
-
-          echo "============================================================="
-          echo "Install BORING"
-          echo "============================================================="
-          python -m pip install .
-
-      - name: Install pyOptSparse
-        if: matrix.PYOPTSPARSE
-        run: |
-          echo "============================================================="
-          echo "Install pyoptsparse from conda-forge"
-          echo "============================================================="
-          conda install -c conda-forge pyoptsparse=${{ matrix.PYOPTSPARSE }} -q -y
-
-      - name: Display environment info
         run: |
           conda info
           conda list
