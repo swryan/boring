@@ -33,11 +33,11 @@ setup(name=pubname,
         "more_itertools",
     ],
     package_data={
-    pkgname: [
-        "XDSM/*.py",
-        "XDSM/*.json",
-        "XDSM/*/*.json",
-    ]
+        pkgname: [
+            "XDSM/*.py",
+            "XDSM/*.json",
+            "XDSM/*/*.json",
+        ]
     },
 
 )
