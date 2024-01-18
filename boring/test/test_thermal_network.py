@@ -50,8 +50,8 @@ class TestCircuit(unittest.TestCase):
         self.prob['circ.Rex_c.T_out'] = 20
 
         p1.run_model()
-        p1.model.list_inputs(values=True, prom_name=True)
-        p1.model.list_outputs(values=True, prom_name=True)
+        p1.model.list_inputs(val=True, prom_name=True)
+        p1.model.list_outputs(val=True, prom_name=True)
 
     def skip_test_resistance(self): # this test works, it just doesn't run on Travis yet.
         Rexe = 0.0000001
@@ -139,12 +139,12 @@ class TestCircuit(unittest.TestCase):
         self.prob2['cond.LW:L_flux'] = 20.
         self.prob2['evap.LW:L_flux'] = 10.
         self.prob2['LW:L_adiabatic'] = 30.
-        # self.prob2['h_fg'] = 
+        # self.prob2['h_fg'] =
         # self.prob2['T_hp'] =
         # self.prob2['v_fg'] =
         # self.prob2['R_g'] =
         # self.prob2['P_v'] =
-        # self.prob2['k_l'] = 
+        # self.prob2['k_l'] =
         self.prob2['XS:t_wk'] = 0.69
         self.prob2['XS:t_w'] = 0.5
         self.prob2['XS:D_v'] = 3.62
@@ -165,8 +165,8 @@ class TestCircuit(unittest.TestCase):
         self.prob2['cond.Rex.T_in'] = 20
 
         p2.run_model()
-        p2.model.list_inputs(values=True, prom_name=True)
-        p2.model.list_outputs(values=True, prom_name=True)
+        p2.model.list_inputs(val=True, prom_name=True)
+        p2.model.list_outputs(val=True, prom_name=True)
         # n2(p2)
         # view_connections(p2)
 

@@ -12,7 +12,7 @@ Assumptions:
         |  _   _   _   _  |
         | |_| |_| |_| |_| |
         |_________________|
-    
+
 """
 
 import openmdao.api as om
@@ -21,7 +21,7 @@ import openmdao.api as om
 class insulationMass(om.ExplicitComponent):
     def initialize(self):
         self.options.declare('num_nodes', types=int)
-    
+
     def setup(self):
         nn = self.options['num_nodes']
 
@@ -43,7 +43,8 @@ class insulationMass(om.ExplicitComponent):
         self.add_output('ins_mass', 0.5, units='kg', desc='total mass of the insulation')
 
         self.declare_partials('*', '*', method='cs')
-    
+        self.set_check_partial_options('*', method='fd')
+
     def compute(self, inputs, outputs):
         num_cells = inputs['num_cells']
         num_stacks = inputs['num_stacks']
@@ -81,4 +82,3 @@ if __name__ == "__main__":
     print('ins_end_sep_area = ', prob.get_val('ins_mass.ins_end_sep_area'))
     print('ins_volume = ', prob.get_val('ins_mass.ins_volume'))
     print('ins_mass = ', prob.get_val('ins_mass.ins_mass'))
-

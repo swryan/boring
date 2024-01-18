@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 from numpy.testing import assert_almost_equal
 from openmdao.api import Problem, Group, IndepVarComp
-from openmdao.utils.assert_utils import assert_check_partials, assert_rel_error
+from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 
 from boring.src.model.cell_comp import CellComp
 
@@ -23,7 +23,7 @@ class TestBatteryCellComp(unittest.TestCase):
         ivc.add_output('I_pack', val=2.*np.ones(n), units='A', desc='Line current')
         ivc.add_output('R_0', val=0.095*np.ones(n), units='ohm', desc='resistance at reference')
         ivc.add_output('R_Th', val=0.095*np.ones(n), units='ohm', desc='Thevenin resistance')
-        
+
         prob.model.add_subsystem(name='ivc', subsys=ivc, promotes_outputs=['*'])
         prob.model.add_subsystem(name='cell', subsys=cell_comp, promotes_inputs=['*'])
 
@@ -34,8 +34,8 @@ class TestBatteryCellComp(unittest.TestCase):
     def test_cell_vals(self):
 
         print(self.prob.get_val('cell.pack_eta'))
-        assert_rel_error(self, self.prob.get_val('cell.pack_eta', units=None), [0.75847356], tolerance=1.0E-5)
-        
+        assert_near_equal(self.prob.get_val('cell.pack_eta', units=None), [0.75847356], tolerance=1.0E-5)
+
     def test_cell_partials(self):
 
         self.prob['R_Th'] = 0.001*np.ones(1)

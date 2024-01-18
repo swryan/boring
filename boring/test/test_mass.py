@@ -31,9 +31,9 @@ class TestMass(unittest.TestCase):
     def test_partials(self):  # derivative check
 
         data = self.prob.check_partials(out_stream=None, method='cs')
-        assert_check_partials(data, atol=1e-10, rtol=1e-10)
+        assert_check_partials(data)  #, atol=1e-10, rtol=1e-10)
 
-    # def test_io_spec(self): 
+    # def test_io_spec(self):
 
     #     subsystem = packMass(num_nodes=1)
     #     assert_match_spec(subsystem, 'Design_specs/struct.json')

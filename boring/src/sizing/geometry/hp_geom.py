@@ -12,7 +12,7 @@ import openmdao.api as om
 
 
 class HPgeom(om.ExplicitComponent):
-    """ 
+    """
         This component calculates various heat pipe dimensions necessary for computing hp thermal resistance and mass, based on design inputs.
         The inner core dimensions and thickness variables for each layer are input, outer dimensions and areas are computed.
         This geom component passes data to a separate component for computing mass. The values computed here do not vary during transients.
@@ -61,6 +61,7 @@ class HPgeom(om.ExplicitComponent):
         self.add_output('LW:L_eff', np.ones(nn), units='mm', desc='Effective Length, from battery center to center, necessary for axial bridge calculations')
 
         self.declare_partials('*', '*', method='cs')
+        self.set_check_partial_options('*', method='fd')
 
     # def setup_partials(self):
     #     nn = self.options['num_nodes']
@@ -98,7 +99,7 @@ class HPgeom(om.ExplicitComponent):
 
         if geom == 'round':
             D_v = inputs['XS:D_v']
-            
+
             outputs['LW:L_eff'] = L_flux + L_adiabatic  # (L_flux*num_cells) + (L_adiabatic*(num_cells+1))
             outputs['XS:r_i'] = (D_v / 2 + t_wk)
             outputs['XS:D_od'] = D_v + t_wk*2 + t_w*2
@@ -121,7 +122,7 @@ class HPgeom(om.ExplicitComponent):
             outputs['LW:A_inter'] = W_v * L_flux
             outputs['XS:A_wk'] = 4*t_wk**2 + 2*H_v*t_wk + 2*W_v*t_wk  # simplified from ((H_v+2*t_wk)*(W_v+2*t_wk)) - (H_v*W_v)
             outputs['XS:A_w'] = 4*t_w**2 + 2*H_v*t_w+ 2*W_v*t_w + 8*t_wk*t_w  # simplified from ((H_v+2*t_wk+2*t_w)(W_v+2*t_wk+2*t_w))-((H_v+2*t_wk)*(W_v+2*t_wk))
- 
+
     # def compute_partials(self, inputs, J):
 
     #     self.declare_partials('*', '*', method='cs')
